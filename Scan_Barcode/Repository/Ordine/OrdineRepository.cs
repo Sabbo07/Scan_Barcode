@@ -33,8 +33,8 @@ namespace Scan_Barcode.Repository
   join MaterialeOrdine mo ON mo.id = mdo.idOrdine
   join Utenti u ON u.IdUtente =mo.idUtente
   join Materiale m ON m.id = mdo.idMateriale
-  jOIN MaterialePosizione mp ON mp.IdMateriale = m.Id
-  where m.idMagazzino=@IdMagazzino AND mo.stato = 2 AND mo.idMandatoSpedizione IS NOT NULL";
+  jOIN MaterialePosizione mp ON mp.IdMateriale = mdo.IdMaterialePosizione
+  where m.idMagazzino=@IdMagazzino AND mo.stato = 2 AND mo.idMandatoSpedizione IS NULL";
             
             var parameters = new Dictionary<string, object>
             {
