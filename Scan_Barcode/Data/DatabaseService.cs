@@ -76,5 +76,20 @@ namespace Scan_Barcode.Data
                 }
             }
         }
+        public async Task<object> ExecuteScalarAsync(string query, Dictionary<string, object> parameters)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand(query, connection))
+            {
+                foreach (var param in parameters)
+                {
+                    command.Parameters.AddWithValue(param.Key, param.Value);
+                }
+
+                await connection.OpenAsync();
+                return await command.ExecuteScalarAsync();
+            }
+        }
+
     }
 }

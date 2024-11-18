@@ -1,6 +1,7 @@
 using Scan_Barcode.Data;
 using Scan_Barcode.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using Scan_Barcode.Repository.Login;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddSwaggerGen();
 // Configura DatabaseService e OrdineRepository per l'iniezione delle dipendenze
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddScoped<IOrdineRepository, OrdineRepository>();
+builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+
 
 // Aggiungi i controller
 builder.Services.AddControllersWithViews();

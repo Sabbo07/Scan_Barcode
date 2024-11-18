@@ -14,25 +14,24 @@ public class OrdiniController : ControllerBase
         {
             _ordineRepository = ordineRepository;
         }
-
-        [HttpGet("GetOrdiniPerMagazzino")]
-        public IActionResult GetOrdiniPerMagazzino(int idMagazzino)
+        
+        [HttpGet("GetOrdiniPerMagazzinoScarico")]
+        public IActionResult GetOrdiniPerMagazzino2(int idMagazzino, int userId)
         {
-            List<Dictionary<string, object>> ordini = _ordineRepository.GetOrdiniPerMagazzino(idMagazzino);
-            return Ok(ordini);
-        }
-
-        [HttpPost("InserisciOrdine")]
-        public IActionResult InserisciOrdine(int idOrdine, int idMateriale, int qtaRichiesta)
-        {
-            int rowsAffected = _ordineRepository.InserisciOrdine(idOrdine, idMateriale, qtaRichiesta);
-            return Ok(new { RowsAffected = rowsAffected });
-        }
-        [HttpGet("GetOrdiniPerMagazzino2")]
-        public IActionResult GetOrdiniPerMagazzino2(int idMagazzino)
-        {
-            var ordiniFiltrati = _ordineRepository.GetOrdiniPerMagazzino2(idMagazzino);
-            return Ok(ordiniFiltrati);
+            try
+            {
+                var ordiniFiltrati = _ordineRepository.GetOrdiniPerMagazzinoScarico(idMagazzino, userId);
+                if (ordiniFiltrati.Count == 0)
+                {
+                    return NotFound(new { message = "La lista è vuota. Nessun ordine trovato." });
+                }
+                return Ok(ordiniFiltrati);
+            }
+            catch (NullReferenceException)
+            {
+                return BadRequest(new {message = "Errore! il magazziniere non è stato specificato"});
+            }
+            
         }
     
 }
