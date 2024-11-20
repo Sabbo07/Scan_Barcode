@@ -16,11 +16,30 @@ public class OrdiniController : ControllerBase
         }
         
         [HttpGet("GetOrdiniPerMagazzinoScarico")]
-        public IActionResult GetOrdiniPerMagazzino2(int idMagazzino, int userId)
+        public IActionResult GetOrdiniPerMagazzinoScarico(int idMagazzino, int userId)
         {
             try
             {
                 var ordiniFiltrati = _ordineRepository.GetOrdiniPerMagazzinoScarico(idMagazzino, userId);
+                if (ordiniFiltrati.Count == 0)
+                {
+                    return NotFound(new { message = "La lista è vuota. Nessun ordine trovato." });
+                }
+                return Ok(ordiniFiltrati);
+            }
+            catch (NullReferenceException)
+            {
+                return BadRequest(new {message = "Errore! il magazziniere non è stato specificato"});
+            }
+            
+        }
+        
+        [HttpGet("GetOrdiniPerMagazzinoCarico")]
+        public IActionResult GetOrdiniPerMagazzinoCarico(int idMagazzino, int userId)
+        {
+            try
+            {
+                var ordiniFiltrati = _ordineRepository.GetOrdiniPerMagazzinoCarico(idMagazzino, userId);
                 if (ordiniFiltrati.Count == 0)
                 {
                     return NotFound(new { message = "La lista è vuota. Nessun ordine trovato." });

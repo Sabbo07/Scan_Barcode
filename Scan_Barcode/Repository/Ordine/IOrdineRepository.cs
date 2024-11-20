@@ -5,4 +5,5 @@ namespace Scan_Barcode.Repository;
 public interface IOrdineRepository
 {
     List<Dictionary<string, object>> GetOrdiniPerMagazzinoScarico(int idMagazzino, int userId);
+    List<Dictionary<string, object>> GetOrdiniPerMagazzinoCarico(int idMagazzino, int userId);
 }
