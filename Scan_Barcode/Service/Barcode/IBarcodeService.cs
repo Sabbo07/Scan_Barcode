@@ -1,0 +1,7 @@
+﻿namespace Scan_Barcode.Service;
+
+public interface IBarcodeService
+{
+    Task<Dictionary<string, object>> GetProductByBarcodeAsync(string barcode);
+    Task<bool> UpdateProductQuantityAsync(string barcode, int newQuantity);
+}

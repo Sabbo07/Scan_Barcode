@@ -12,30 +12,87 @@ namespace Scan_Barcode.Repository
             _databaseService = databaseService;
         }
 
-        
+
         public List<Dictionary<string, object>> GetOrdiniPerMagazzinoScarico(int idMagazzino, int userId)
+        {
+            // Controllo dei parametri
+            if (userId <= 0)
+            {
+                throw new ArgumentException("L'ID utente non è valido.");
+            }
+
+            // Controlla il ruolo dell'utent
+
+            // Query SQL
+            string query = @"SELECT 
+                mo.id AS IDOrdine,
+                m.nome AS Nome_Materiale,
+                u.nome AS Cliente_Richiedente,
+                mdo.qtaRichiesta AS Quantita_Richiesta,
+                m.Giacenza as QuantitàTotale,
+                mo.nOrdine AS Riferimento_Ordine,
+                CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
+                CAST(mp.colonna AS VARCHAR(2)) + '-' + 
+                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione,
+                m.Barcode AS Barcode
+
+                FROM 
+                MaterialeOrdineDettaglio mdo
+                JOIN 
+                MaterialeOrdine mo ON mo.id = mdo.idOrdine
+                JOIN 
+                Utenti u ON u.IdUtente = mo.idUtente
+                JOIN 
+                Materiale m ON m.id = mdo.idMateriale
+                LEFT JOIN 
+                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizione
+                WHERE 
+                m.idMagazzino = @idMagazzino AND
+                mo.stato = 2 AND
+                mo.idMandatoSpedizione IS NOT NULL";
+
+            // Parametri della query
+            var parameters = new Dictionary<string, object>
+            {
+                { "@IdMagazzino", idMagazzino }
+            };
+
+            // Esegui la query
+            return _databaseService.ExecuteQuery(query, parameters);
+        }
+
+
+        public List<Dictionary<string, object>> GetOrdiniPerMagazzinoCarico(int idMagazzino, int userId)
         {
             if ((userId <= 0) || (userId == null))
             {
                 throw new NullReferenceException();
             }
-            
-            string query = @"
-    select mo.id AS IDOrdine,
-           m.nome AS Nome_Materiale ,
-			u.Nome AS Cliente_Richiedente,
-			mdo.qtaRichiesta AS Quantità_Richiesta ,
-			mo.nOrdine AS Riferimento_Ordine,
-        CAST(mp.Scaffale AS VARCHAR(1)) + '-' + 
-        CAST(mp.Colonna AS VARCHAR(2)) + '-' + 
-        CAST(mp.Ripiano AS VARCHAR(1)) AS Posizione
-  from MaterialeOrdineDettaglio mdo
-  join MaterialeOrdine mo ON mo.id = mdo.idOrdine
-  join Utenti u ON u.IdUtente =mo.idUtente
-  join Materiale m ON m.id = mdo.idMateriale
-  jOIN MaterialePosizione mp ON mp.IdMateriale = mdo.IdMaterialePosizione
-  where m.idMagazzino=@IdMagazzino AND mo.stato = 2 AND mo.idMandatoSpedizione IS NULL";
-            
+
+            string query = @"SELECT 
+                mo.id AS IDOrdine,
+                m.nome AS Nome_Materiale,
+                u.nome AS Cliente_Richiedente,
+                mdo.qtaRichiesta AS Quantita_Richiesta,
+                mo.nOrdine AS Riferimento_Ordine,
+                CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
+                CAST(mp.colonna AS VARCHAR(2)) + '-' + 
+                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione
+                FROM 
+                MaterialeOrdineDettaglio mdo
+                JOIN 
+                MaterialeOrdine mo ON mo.id = mdo.idOrdine
+                JOIN 
+                Utenti u ON u.IdUtente = mo.idUtente
+                JOIN 
+                Materiale m ON m.id = mdo.idMateriale
+                LEFT JOIN 
+                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizione
+                WHERE 
+                m.idMagazzino = @idMagazzino AND
+                mo.stato = 3
+                AND mdo.rientrato IS  NULL";
+
             var parameters = new Dictionary<string, object>
             {
                 { "@IdMagazzino", idMagazzino }
@@ -44,5 +101,6 @@ namespace Scan_Barcode.Repository
             return _databaseService.ExecuteQuery(query, parameters);
         }
     }
+    
     
 }

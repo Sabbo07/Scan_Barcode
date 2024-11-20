@@ -20,22 +20,31 @@ public class LoginRepository : ILoginRepository
         };
         
         string query = @"
-SELECT Id 
-FROM Utenti 
-WHERE UserId = @username AND Password = @password";
+                SELECT Id 
+                FROM Utenti 
+                WHERE UserId = @username AND Password = @password";
 
         // Chiamata al metodo appropriato in DatabaseService
         var result = await _databaseService.ExecuteScalarAsync(query, parameters);
 
         if (result != null && int.TryParse(result.ToString(), out int userId))
         {
-            return userId;
-        }
+            query = @"
+            INSERT INTO Log (Id, Tipo, Data, Utente)
+            VALUES (NEWID(), 'Accesso eseguito in App!', GETDATE(), @username)";
+            
+            // Non ci sono parametri per questa query
+            var parameters2 = new Dictionary<string, object>
+            {
+                { "@username", username }
+            };
 
-        if (result != null)
-        {
+            // Esegui la query
+            _databaseService.ExecuteQuery(query, parameters2);
+            return userId;
             
         }
+        
         return null; // Nessun utente trovato
     }
     

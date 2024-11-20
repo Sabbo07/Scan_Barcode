@@ -56,6 +56,7 @@ namespace Scan_Barcode.Data
             }
             return result;
         }
+        
 
         // Metodo di esempio per eseguire una query INSERT, UPDATE, DELETE
         public int ExecuteNonQuery(string query, Dictionary<string, object> parameters = null)
@@ -90,6 +91,22 @@ namespace Scan_Barcode.Data
                 return await command.ExecuteScalarAsync();
             }
         }
+        public async Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand(query, connection))
+            {
+                foreach (var param in parameters)
+                {
+                    command.Parameters.AddWithValue(param.Key, param.Value);
+                }
 
+                await connection.OpenAsync();
+                return await command.ExecuteNonQueryAsync();
+            }
+        }
+
+
+        
     }
 }
