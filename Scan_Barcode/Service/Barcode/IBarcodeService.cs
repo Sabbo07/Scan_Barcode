@@ -3,5 +3,5 @@
 public interface IBarcodeService
 {
     Task<Dictionary<string, object>> GetProductByBarcodeAsync(string barcode);
-    Task<bool> UpdateProductQuantityAsync(string barcode, int newQuantity);
+    Task<bool> UpdateProductQuantityAsync(string barcode, int newQuantity, int idOrdine,string username);
 }

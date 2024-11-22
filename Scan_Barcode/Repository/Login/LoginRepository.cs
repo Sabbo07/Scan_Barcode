@@ -1,5 +1,5 @@
 ﻿using Scan_Barcode.Data;
-
+using Scan_Barcode.Accessi;
 namespace Scan_Barcode.Repository.Login;
 
 public class LoginRepository : ILoginRepository
@@ -29,18 +29,9 @@ public class LoginRepository : ILoginRepository
 
         if (result != null && int.TryParse(result.ToString(), out int userId))
         {
-            query = @"
-            INSERT INTO Log (Id, Tipo, Data, Utente)
-            VALUES (NEWID(), 'Accesso eseguito in App!', GETDATE(), @username)";
-            
-            // Non ci sono parametri per questa query
-            var parameters2 = new Dictionary<string, object>
-            {
-                { "@username", username }
-            };
+            var log = new Log(_databaseService);
+            log.accessoeseguito(username);
 
-            // Esegui la query
-            _databaseService.ExecuteQuery(query, parameters2);
             return userId;
             
         }
