@@ -3,6 +3,6 @@
 public interface IBarcodeRepository
 {
     Task<Dictionary<string, object>> FindByBarcodeAsync(string barcode);
-    Task<bool> UpdateQuantityByBarcodeAsync(string barcode, int newQuantity);
+    Task<bool> UpdateQuantityByBarcodeAsync(string barcode, int newQuantity, int idOrdine,string username);
 
 }

@@ -105,8 +105,72 @@ namespace Scan_Barcode.Data
                 return await command.ExecuteNonQueryAsync();
             }
         }
+        public async Task<List<T>> QueryAsync<T>(string query, Dictionary<string, object> parameters = null)
+        {
+            var result = new List<T>();
 
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand(query, connection))
+            {
+                // Aggiungi parametri alla query, se presenti
+                if (parameters != null)
+                {
+                    foreach (var param in parameters)
+                    {
+                        command.Parameters.AddWithValue(param.Key, param.Value);
+                    }
+                }
+
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    // Ottieni le proprietà della classe T
+                    var properties = typeof(T).GetProperties();
+
+                    while (await reader.ReadAsync())
+                    {
+                        // Crea un'istanza di T per ogni riga
+                        var item = Activator.CreateInstance<T>();
+
+                        foreach (var property in properties)
+                        {
+                            // Cerca se la proprietà corrisponde a una colonna del reader
+                            if (reader.HasColumn(property.Name))
+                            {
+                                var value = reader[property.Name];
+                                if (value != DBNull.Value)
+                                {
+                                    property.SetValue(item, value);
+                                }
+                            }
+                        }
+
+                        result.Add(item);
+                    }
+                }
+            }
+
+            return result;
+        }
 
         
+
+        
+    }
+}
+
+public static class SqlDataReaderExtensions
+{
+    public static bool HasColumn(this SqlDataReader reader, string columnName)
+    {
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            if (reader.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

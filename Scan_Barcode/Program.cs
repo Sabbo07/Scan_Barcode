@@ -6,6 +6,7 @@ using Scan_Barcode.Repository.Login;
 using Scan_Barcode.Repository.Magazzino;
 using Scan_Barcode.Service;
 using Scan_Barcode.Service.Magazzino;
+using Scan_Barcode.Service.Ordine;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IBarcodeService, BarcodeService>();
 builder.Services.AddScoped<IBarcodeRepository, BarcodeRepository>();
 builder.Services.AddScoped<IMagazzinoRepository, MagazzinoRepository>();
 builder.Services.AddScoped<IMagazzinoService, MagazzinoService>();
+builder.Services.AddScoped<IOrdineService, OrdineService>();
 // Aggiungi i controller
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();

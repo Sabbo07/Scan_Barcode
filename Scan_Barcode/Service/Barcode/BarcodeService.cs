@@ -31,7 +31,7 @@ namespace Scan_Barcode.Service
 
             return product;
         }
-        public async Task<bool> UpdateProductQuantityAsync(string barcode, int newQuantity)
+        public async Task<bool> UpdateProductQuantityAsync(string barcode, int newQuantity,int idOrdine,string username)
         {
             if (string.IsNullOrWhiteSpace(barcode))
             {
@@ -43,7 +43,7 @@ namespace Scan_Barcode.Service
                 throw new ArgumentException("La quantità non può essere negativa.");
             }
 
-            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsync(barcode, newQuantity);
+            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsync(barcode, newQuantity, idOrdine, username);
 
             if (!isUpdated)
             {

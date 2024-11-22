@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Scan_Barcode.Data;
+using Scan_Barcode.Entities.DTO;
 
 namespace Scan_Barcode.Repository
 {
@@ -91,7 +92,7 @@ namespace Scan_Barcode.Repository
                 WHERE 
                 m.idMagazzino = @idMagazzino AND
                 mo.stato = 3
-                AND mdo.rientrato IS  NULL";
+                AND mdo.rientrato IS NOT NULL";
 
             var parameters = new Dictionary<string, object>
             {
@@ -99,6 +100,27 @@ namespace Scan_Barcode.Repository
             };
 
             return _databaseService.ExecuteQuery(query, parameters);
+        }
+        
+        
+        
+        public async Task<IEnumerable<MaterialeOrdineDto>> GetMaterialeOrdineAsync(int idOrdine, string barcode)
+        {
+            var query = @"
+        SELECT nOrdine, destinazione, indirizzo, localita, provincia, regione, cap, qta, qtaRichiesta, Barcode
+        FROM MaterialeOrdine mo
+        JOIN MaterialeOrdineDettaglio mod ON mod.idOrdine = mo.id
+        JOIN Materiale m ON m.id = mod.idMateriale
+        WHERE mo.id = @idOrdine AND Barcode = @Barcode";
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "@idOrdine", idOrdine },
+                { "@Barcode", barcode }
+            };
+
+            var result = await _databaseService.QueryAsync<MaterialeOrdineDto>(query, parameters);
+            return result;
         }
     }
     

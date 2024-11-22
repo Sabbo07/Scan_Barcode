@@ -1,5 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Scan_Barcode.Accessi;
+using Scan_Barcode.Data;
 using Scan_Barcode.Service;
 
 namespace Scan_Barcode.Controller
@@ -8,6 +10,7 @@ namespace Scan_Barcode.Controller
     [Route("api/[controller]")]
     public class BarcodeController : ControllerBase
     {
+        private readonly DatabaseService _databaseService;
         private readonly IBarcodeService _barcodeService;
 
         public BarcodeController(IBarcodeService barcodeService)
@@ -36,15 +39,24 @@ namespace Scan_Barcode.Controller
                 return StatusCode(500, new { Message = "Errore interno del server", Details = ex.Message });
             }
         }
-        [HttpPut("{barcode}/quantity")]
-        public async Task<IActionResult> UpdateProductQuantity(string barcode,  int newQuantity)
+        [HttpPut("{barcode}/{newQuantity}/{IDOrdine}/{UserID}/{username}")]
+        public async Task<IActionResult> UpdateProductQuantity(string barcode,  int newQuantity, int IDOrdine,int UserID,string username)
         {
+            if (IDOrdine == 0)
+            {
+                return BadRequest(new { Message = "L'ID dell'ordine è obbligatorio e deve essere maggiore di 0." });
+            }
+            if (newQuantity < 0)
+            {
+                return BadRequest(new { Message = "Il Valore inserito è negativo, Non è possibile" });
+            }
             try
             {
-                var isUpdated = await _barcodeService.UpdateProductQuantityAsync(barcode, newQuantity);
+                var isUpdated = await _barcodeService.UpdateProductQuantityAsync(barcode, newQuantity,IDOrdine,username);
 
                 if (isUpdated)
                 {
+                    
                     return Ok(new { Message = "Quantità aggiornata con successo." });
                 }
 
