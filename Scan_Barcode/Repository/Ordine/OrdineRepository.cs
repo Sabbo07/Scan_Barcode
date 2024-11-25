@@ -16,15 +16,13 @@ namespace Scan_Barcode.Repository
 
         public List<Dictionary<string, object>> GetOrdiniPerMagazzinoScarico(int idMagazzino, int userId)
         {
-            // Controllo dei parametri
+            //Controllo dei parametri
             if (userId <= 0)
             {
                 throw new ArgumentException("L'ID utente non è valido.");
             }
-
             // Controlla il ruolo dell'utent
-
-            // Query SQL
+            
             string query = @"SELECT 
                 mo.id AS IDOrdine,
                 m.nome AS Nome_Materiale,
@@ -51,14 +49,12 @@ namespace Scan_Barcode.Repository
                 m.idMagazzino = @idMagazzino AND
                 mo.stato = 2 AND
                 mo.idMandatoSpedizione IS NOT NULL";
-
-            // Parametri della query
+            
             var parameters = new Dictionary<string, object>
             {
                 { "@IdMagazzino", idMagazzino }
             };
 
-            // Esegui la query
             return _databaseService.ExecuteQuery(query, parameters);
         }
 
@@ -92,7 +88,7 @@ namespace Scan_Barcode.Repository
                 WHERE 
                 m.idMagazzino = @idMagazzino AND
                 mo.stato = 3
-                AND mdo.rientrato IS NOT NULL";
+                AND mdo.rientrato IS NULL";
 
             var parameters = new Dictionary<string, object>
             {

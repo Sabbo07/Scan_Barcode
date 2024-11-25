@@ -20,8 +20,7 @@ namespace Scan_Barcode.Data
         {
             return new SqlConnection(_connectionString);
         }
-
-        // Metodo di esempio per eseguire una query SELECT
+        
         public List<Dictionary<string, object>> ExecuteQuery(string query, Dictionary<string, object> parameters = null)
         {
             var result = new List<Dictionary<string, object>>();
@@ -31,7 +30,6 @@ namespace Scan_Barcode.Data
                 connection.Open();
                 using (var command = new SqlCommand(query, connection))
                 {
-                    // Aggiungi parametri alla query, se presenti
                     if (parameters != null)
                     {
                         foreach (var param in parameters)
@@ -56,9 +54,6 @@ namespace Scan_Barcode.Data
             }
             return result;
         }
-        
-
-        // Metodo di esempio per eseguire una query INSERT, UPDATE, DELETE
         public int ExecuteNonQuery(string query, Dictionary<string, object> parameters = null)
         {
             using (var connection = GetConnection())
@@ -112,7 +107,6 @@ namespace Scan_Barcode.Data
             using (var connection = GetConnection())
             using (var command = new SqlCommand(query, connection))
             {
-                // Aggiungi parametri alla query, se presenti
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -125,17 +119,14 @@ namespace Scan_Barcode.Data
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
-                    // Ottieni le proprietà della classe T
                     var properties = typeof(T).GetProperties();
 
                     while (await reader.ReadAsync())
                     {
-                        // Crea un'istanza di T per ogni riga
                         var item = Activator.CreateInstance<T>();
 
                         foreach (var property in properties)
                         {
-                            // Cerca se la proprietà corrisponde a una colonna del reader
                             if (reader.HasColumn(property.Name))
                             {
                                 var value = reader[property.Name];
@@ -153,11 +144,8 @@ namespace Scan_Barcode.Data
 
             return result;
         }
-
-        
-
-        
     }
+    
 }
 
 public static class SqlDataReaderExtensions

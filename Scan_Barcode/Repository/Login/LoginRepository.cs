@@ -20,11 +20,9 @@ public class LoginRepository : ILoginRepository
         };
         
         string query = @"
-                SELECT Id 
+                SELECT IdUtente
                 FROM Utenti 
-                WHERE UserId = @username AND Password = @password";
-
-        // Chiamata al metodo appropriato in DatabaseService
+                WHERE UserId = @username AND Password = @password AND Ruolo = '6139'";
         var result = await _databaseService.ExecuteScalarAsync(query, parameters);
 
         if (result != null && int.TryParse(result.ToString(), out int userId))
@@ -35,7 +33,12 @@ public class LoginRepository : ILoginRepository
             return userId;
             
         }
-        
+
+        if (result == null)
+        {
+            var log = new Log(_databaseService);
+            log.accessorifiutato(username);
+        }
         return null; // Nessun utente trovato
     }
     

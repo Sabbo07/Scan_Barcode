@@ -23,6 +23,22 @@ namespace Scan_Barcode.Controller
         {
             try
             {
+                if (string.IsNullOrEmpty(barcode))
+                {
+                    return BadRequest(new { message = "Errore! il Barcode risulta essere nullo!" });
+                }
+
+                if (barcode.Length < 13)
+                {
+                    return BadRequest(new
+                        { message = "Errore! il Barcode risulta di grandezza minore a quella stabilita!" });
+                }
+
+                if (barcode.Length > 13)
+                {
+                    return BadRequest(new
+                        { message = "Errore! il Barcode risulta di grandezza maggiore a quella stabilita!" });
+                }
                 var product = await _barcodeService.GetProductByBarcodeAsync(barcode);
                 return Ok(product);
             }
@@ -39,28 +55,34 @@ namespace Scan_Barcode.Controller
                 return StatusCode(500, new { Message = "Errore interno del server", Details = ex.Message });
             }
         }
-        [HttpPut("{barcode}/{newQuantity}/{IDOrdine}/{UserID}/{username}")]
-        public async Task<IActionResult> UpdateProductQuantity(string barcode,  int newQuantity, int IDOrdine,int UserID,string username)
+        
+        /*
+         * Qua effettuiamo l'update del prodotto preso in esame
+         */
+        [HttpPut("{barcode}/{newQuantity}/{IDOrdine}/{UserID}")]
+        public async Task<IActionResult> UpdateProductQuantity(string barcode, int newQuantity, int IDOrdine, int UserID)
         {
-            if (IDOrdine == 0)
-            {
-                return BadRequest(new { Message = "L'ID dell'ordine è obbligatorio e deve essere maggiore di 0." });
-            }
-            if (newQuantity < 0)
-            {
-                return BadRequest(new { Message = "Il Valore inserito è negativo, Non è possibile" });
-            }
             try
             {
-                var isUpdated = await _barcodeService.UpdateProductQuantityAsync(barcode, newQuantity,IDOrdine,username);
+                var username = await _barcodeService.GetUsernameByUserIdAsync(UserID);
+
+                if (string.IsNullOrEmpty(username))
+                {
+                    return NotFound(new { message = "Errore! L'username associato all'UserID non è stato trovato." });
+                }
+
+                var isUpdated = await _barcodeService.UpdateProductQuantityAsync(barcode, newQuantity, IDOrdine, username);
 
                 if (isUpdated)
                 {
-                    
                     return Ok(new { Message = "Quantità aggiornata con successo." });
                 }
 
                 return NotFound(new { Message = "Prodotto non trovato." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message }); // Quantità non valida
             }
             catch (ArgumentException ex)
             {
@@ -75,6 +97,7 @@ namespace Scan_Barcode.Controller
                 return StatusCode(500, new { Message = "Errore interno del server", Details = ex.Message });
             }
         }
+
 
     }
 }
