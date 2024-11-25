@@ -6,7 +6,7 @@ namespace Scan_Barcode.Accessi;
 public class Accesso
 {
     private static readonly string EncryptionKey = "MAKV2SPBNI99212"; 
-
+    // Questa è la decriptazione della password
     public static string Decrypt(string cipherText)
     {
         byte[] cipherBytes = Convert.FromBase64String(cipherText);
@@ -31,7 +31,7 @@ public class Accesso
         }
         return cipherText;
     }
-
+    // Questa è la criptazione della password
     public static string Encrypt(string clearText)
     {
         byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
