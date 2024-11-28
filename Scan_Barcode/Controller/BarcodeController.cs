@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Scan_Barcode.Accessi;
 using Scan_Barcode.Data;
 using Scan_Barcode.Service;
@@ -91,6 +92,10 @@ namespace Scan_Barcode.Controller
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { Message = ex.Message });
+            }
+            catch (SqlException ex) when (ex.Number == -2) 
+            {
+                return StatusCode(500, new { Message = "Attenzione il network attualmente non è disponiblile. Riprovare!" });
             }
             catch (Exception ex)
             {
