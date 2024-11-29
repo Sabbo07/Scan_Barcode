@@ -33,7 +33,7 @@ namespace Scan_Barcode.Service
 
             return product;
         }
-        public async Task<bool> UpdateProductQuantityAsync(string barcode, int quantityChange, int idOrdine, string username)
+        public async Task<bool> UpdateProductQuantityAsyncScarico(string barcode, int quantityChange, int idOrdine, string username)
         {
             if (string.IsNullOrWhiteSpace(barcode))
             {
@@ -50,7 +50,7 @@ namespace Scan_Barcode.Service
             }
 
             // Procedi con l'aggiornamento della quantità
-            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsync(barcode, quantityChange, idOrdine, username);
+            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsyncScarico(barcode, quantityChange, idOrdine, username);
 
             if (!isUpdated)
             {

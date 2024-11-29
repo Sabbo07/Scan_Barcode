@@ -72,7 +72,7 @@ namespace Scan_Barcode.Controller
                     return NotFound(new { message = "Errore! L'username associato all'UserID non è stato trovato." });
                 }
 
-                var isUpdated = await _barcodeService.UpdateProductQuantityAsync(barcode, newQuantity, IDOrdine, username);
+                var isUpdated = await _barcodeService.UpdateProductQuantityAsyncScarico(barcode, newQuantity, IDOrdine, username);
 
                 if (isUpdated)
                 {
