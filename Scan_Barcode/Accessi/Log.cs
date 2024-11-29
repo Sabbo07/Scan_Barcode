@@ -21,6 +21,11 @@ public class Log
         };
         
         _databaseService.ExecuteQuery(query, parameters2);
+
+        query = @" UPDATE Utenti
+SET ultimoAccesso = GETDATE()
+where UserId = @username";
+        _databaseService.ExecuteQuery(query, parameters2);
     }
     // questo invece scrive in db che l'ordine è stato eseguito
     public void ordineeseguito(string username, int ordine)

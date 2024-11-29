@@ -70,11 +70,12 @@ namespace Scan_Barcode.Repository
                 mo.id AS IDOrdine,
                 m.nome AS Nome_Materiale,
                 u.nome AS Cliente_Richiedente,
-                mdo.qtaRichiesta AS Quantita_Richiesta,
+                mdo.qtaRichiesta AS Quantita_DiRientro,
                 mo.nOrdine AS Riferimento_Ordine,
+                m.Barcode AS Barcode,
                 CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
                 CAST(mp.colonna AS VARCHAR(2)) + '-' + 
-                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione
+                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione_di_Rientro
                 FROM 
                 MaterialeOrdineDettaglio mdo
                 JOIN 
@@ -84,11 +85,12 @@ namespace Scan_Barcode.Repository
                 JOIN 
                 Materiale m ON m.id = mdo.idMateriale
                 LEFT JOIN 
-                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizione
+                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizioneRientro
                 WHERE 
                 m.idMagazzino = @idMagazzino AND
                 mo.stato = 3
-                AND mdo.rientrato IS NULL";
+                AND mdo.rientrato IS NULL
+                AND mdo.statoMatRientro IS NULL";
 
             var parameters = new Dictionary<string, object>
             {

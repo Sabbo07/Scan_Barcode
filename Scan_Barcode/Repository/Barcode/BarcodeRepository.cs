@@ -32,7 +32,7 @@ namespace Scan_Barcode.Repository.Barcode
             return result.Count > 0 ? result[0] : null;
         }
         
-        public async Task<bool> UpdateQuantityByBarcodeAsync(string barcode, int quantityChange, int idOrdine, string username)
+        public async Task<bool> UpdateQuantityByBarcodeAsyncScarico(string barcode, int quantityChange, int idOrdine, string username)
         {
             string query = @"
     UPDATE m
@@ -70,7 +70,45 @@ namespace Scan_Barcode.Repository.Barcode
 
             return rowsAffected > 0; // Restituisce true se almeno una riga è stata aggiornata
         }
+        public async Task<bool> UpdateQuantityByBarcodeAsyncCarico(string barcode, int quantityChange, int idOrdine, string username)
+        {
+            string query = @"
+    UPDATE m
+    SET m.Giacenza = m.Giacenza + @QuantityChange
+    FROM Materiale m
+    INNER JOIN MaterialeOrdineDettaglio mod
+        ON mod.idMateriale = m.id
+    INNER JOIN MaterialeOrdine mo 
+        ON mo.Id = mod.IdOrdine
+    WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
+    AND m.Giacenza + @QuantityChange >= 0
+    AND mdo";
 
+            var parameters = new Dictionary<string, object>
+            {
+                { "@Barcode", barcode },
+                { "@QuantityChange", quantityChange }, // Può essere positivo o negativo
+                { "@IdOrdine", idOrdine }
+            };
+
+            string query2 = @"
+    UPDATE MaterialeOrdine
+    SET stato = 3
+    WHERE id = @IdOrdine";
+
+            var parameters2 = new Dictionary<string, object>
+            {
+                { "@IdOrdine", idOrdine }
+            };
+
+            var log = new Log(_databaseService);
+            log.ordineeseguito(username, idOrdine);
+
+            var rowsAffected = _databaseService.ExecuteNonQuery(query, parameters);
+            _databaseService.ExecuteNonQuery(query2, parameters2);
+
+            return rowsAffected > 0; // Restituisce true se almeno una riga è stata aggiornata
+        }
         public async Task<int> GetCurrentQuantityByBarcodeAsync(string barcode, int idOrdine)
         {
             string query = @"

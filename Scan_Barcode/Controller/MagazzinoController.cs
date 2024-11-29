@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Scan_Barcode.Service.Magazzino;
 
 namespace Scan_Barcode.Controller;
@@ -18,6 +19,14 @@ public class MagazzinoController : ControllerBase
         [HttpGet("GetMagazzino")]
         public ActionResult<List<Dictionary<string, object>>> GetAll()
         {
-            return Ok(_magazzinoService.GetAllMagazzini());
+            try
+            {
+                return Ok(_magazzinoService.GetAllMagazzini());
+            }
+            catch (SqlException ex) when (ex.Number == -2) 
+            {
+                return StatusCode(500, new { Message = "Attenzione il network attualmente non è disponiblile. Riprovare!" });
+            }
+
         }
 }
