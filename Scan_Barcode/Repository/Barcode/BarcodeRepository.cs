@@ -34,16 +34,19 @@ namespace Scan_Barcode.Repository.Barcode
         
         public async Task<bool> UpdateQuantityByBarcodeAsyncScarico(string barcode, int quantityChange, int idOrdine, string username)
         {
+            //Qui è sbagliata la query, o meglio la chiamata
             string query = @"
-    UPDATE m
-    SET m.Giacenza = m.Giacenza + @QuantityChange
-    FROM Materiale m
-    INNER JOIN MaterialeOrdineDettaglio mod
-        ON mod.idMateriale = m.id
-    INNER JOIN MaterialeOrdine mo 
-        ON mo.Id = mod.IdOrdine
-    WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
-    AND m.Giacenza + @QuantityChange >= 0";
+                    UPDATE m
+                    SET m.Giacenza = m.Giacenza + @QuantityChange
+                    FROM Materiale m
+                    INNER JOIN MaterialeOrdineDettaglio mod
+                    ON mod.idMateriale = m.id
+                    INNER JOIN MaterialeOrdine mo 
+                    ON mo.Id = mod.IdOrdine
+                    WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
+                    mo.stato = 2 AND
+                    mo.idMandatoSpedizione IS NOT NULL
+                    AND m.Giacenza + @QuantityChange >= 0";
 
             var parameters = new Dictionary<string, object>
             {
@@ -53,9 +56,9 @@ namespace Scan_Barcode.Repository.Barcode
             };
 
             string query2 = @"
-    UPDATE MaterialeOrdine
-    SET stato = 3
-    WHERE id = @IdOrdine";
+                UPDATE MaterialeOrdine
+                SET stato = 3
+                WHERE id = @IdOrdine";
 
             var parameters2 = new Dictionary<string, object>
             {
@@ -81,8 +84,9 @@ namespace Scan_Barcode.Repository.Barcode
     INNER JOIN MaterialeOrdine mo 
         ON mo.Id = mod.IdOrdine
     WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
-    AND m.Giacenza + @QuantityChange >= 0
-    AND mdo";
+    AND m.Giacenza + @QuantityChange >= 0 AND
+    mo.stato = 3 AND
+                    mod.rientrato IS NULL";
 
             var parameters = new Dictionary<string, object>
             {
@@ -90,22 +94,12 @@ namespace Scan_Barcode.Repository.Barcode
                 { "@QuantityChange", quantityChange }, // Può essere positivo o negativo
                 { "@IdOrdine", idOrdine }
             };
-
-            string query2 = @"
-    UPDATE MaterialeOrdine
-    SET stato = 3
-    WHERE id = @IdOrdine";
-
-            var parameters2 = new Dictionary<string, object>
-            {
-                { "@IdOrdine", idOrdine }
-            };
+            
 
             var log = new Log(_databaseService);
             log.ordineeseguito(username, idOrdine);
 
             var rowsAffected = _databaseService.ExecuteNonQuery(query, parameters);
-            _databaseService.ExecuteNonQuery(query2, parameters2);
 
             return rowsAffected > 0; // Restituisce true se almeno una riga è stata aggiornata
         }

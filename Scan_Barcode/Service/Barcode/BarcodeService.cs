@@ -50,7 +50,7 @@ namespace Scan_Barcode.Service
             }
 
             // Procedi con l'aggiornamento della quantità
-            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsyncScarico(barcode, quantityChange, idOrdine, username);
+            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsyncCarico(barcode, quantityChange, idOrdine, username);
 
             if (!isUpdated)
             {
