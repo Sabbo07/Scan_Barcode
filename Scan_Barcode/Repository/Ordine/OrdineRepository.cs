@@ -70,12 +70,13 @@ namespace Scan_Barcode.Repository
                 mo.id AS IDOrdine,
                 m.nome AS Nome_Materiale,
                 u.nome AS Cliente_Richiedente,
+                m.Giacenza as QuantitàTotale,
                 mdo.qtaRichiesta AS Quantita_DiRientro,
                 mo.nOrdine AS Riferimento_Ordine,
                 m.Barcode AS Barcode,
                 CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
                 CAST(mp.colonna AS VARCHAR(2)) + '-' + 
-                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione_di_Rientro
+                CAST(mp.ripiano AS VARCHAR(1)) AS Posizione
                 FROM 
                 MaterialeOrdineDettaglio mdo
                 JOIN 

@@ -2,5 +2,5 @@
 
 public interface ILoginRepository
 {
-    Task<int?> GetUserIdAsync(string username, string password);
+    Task<(int? UserId, string Status)> GetUserIdAsync(string username, string password);
 }

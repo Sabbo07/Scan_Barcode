@@ -11,36 +11,55 @@ public class LoginRepository : ILoginRepository
         _databaseService = databaseService;
     }
 
-    public async Task<int?> GetUserIdAsync(string username, string password)
+    public async Task<(int? UserId, string Status)> GetUserIdAsync(string username, string password)
     {
         var parameters = new Dictionary<string, object>
         {
             { "@username", username },
             { "@password", password }
         };
-        
-        string query = @"
-                SELECT IdUtente
-                FROM Utenti 
+
+        // Verifica se l'utente esiste
+        string userQuery = @"
+        SELECT COUNT(*)
+        FROM Utenti
+        WHERE UserId = @username";
+        var userExists = await _databaseService.ExecuteScalarAsync(userQuery, parameters);
+
+        if (userExists != null && Convert.ToInt32(userExists) > 0)
+        {
+            // Verifica se username e password corrispondono
+            string authQuery = @"
+            SELECT IdUtente
+            FROM Utenti 
+            WHERE UserId = @username AND Password = @password";
+            var result = await _databaseService.ExecuteScalarAsync(authQuery, parameters);
+
+            if (result != null && int.TryParse(result.ToString(), out int userId))
+            {
+                // Verifica il ruolo
+                string roleQuery = @"
+                SELECT COUNT(*)
+                FROM Utenti
                 WHERE UserId = @username AND Password = @password AND Ruolo = '6139'";
-        var result = await _databaseService.ExecuteScalarAsync(query, parameters);
+                var roleCheck = await _databaseService.ExecuteScalarAsync(roleQuery, parameters);
 
-        if (result != null && int.TryParse(result.ToString(), out int userId))
-        {
-            var log = new Log(_databaseService);
-            log.accessoeseguito(username);
+                if (roleCheck != null && Convert.ToInt32(roleCheck) > 0)
+                {
+                    var log = new Log(_databaseService);
+                    log.accessoeseguito(username);
+                    return (userId, "Success");
+                }
 
-            return userId;
-            
+                return (null, "UnauthorizedRole");
+            }
+
+            return (null, "InvalidUser");
         }
 
-        if (result == null)
-        {
-            var log = new Log(_databaseService);
-            log.accessorifiutato(username);
-        }
-        return null; // Nessun utente trovato
+        return (null, "UserNotFound");
     }
+
     
 }
 

@@ -20,27 +20,33 @@ public class LoginController : ControllerBase
     {
         try
         {
-
-
             loginRequest.Password = Accesso.Encrypt(loginRequest.Password);
-            int? userId = await _loginRepository.GetUserIdAsync(loginRequest.Username, loginRequest.Password);
+            var (userId, status) = await _loginRepository.GetUserIdAsync(loginRequest.Username, loginRequest.Password);
 
-            if (userId.HasValue)
+            switch (status)
             {
+                case "Success":
+                    return Ok(new { UserId = userId });
 
-                return Ok(new { UserId = userId.Value });
-            }
-            else
-            {
-                
-                return Unauthorized(new { message = "Username o password invalidi. Oppure stai accedendo con un account non valido!" });
+                case "InvalidUser":
+                    return Unauthorized(new { message = "Username o Password non validi." });
+
+                case "UserNotFound":
+                    return Unauthorized(new { message = "Utente non trovato." });
+
+                case "UnauthorizedRole":
+                    return Unauthorized(new { message = "Utente non autorizzato per questo sistema." });
+
+                default:
+                    return Unauthorized(new { message = "Accesso non autorizzato." });
             }
         }
-        catch (SqlException ex) when (ex.Number == -2) // Timeout specifico
+        catch (SqlException ex) when (ex.Number == -2)
         {
-            return StatusCode(500, new { Message = "Attenzione il network attualmente non è disponiblile. Riprovare!" });
+            return StatusCode(500, new { Message = "Attenzione il network attualmente non è disponibile. Riprovare!" });
         }
     }
+
 }
 public class LoginRequest
 {
