@@ -37,14 +37,14 @@ namespace Scan_Barcode.Repository.Barcode
             //Qui è sbagliata la query, o meglio la chiamata
             string query = @"
                     UPDATE m
-                    SET m.Giacenza = m.Giacenza + @QuantityChange
+                    SET m.Giacenza = m.Giacenza - @QuantityChange
                     FROM Materiale m
                     INNER JOIN MaterialeOrdineDettaglio mod
                     ON mod.idMateriale = m.id
                     INNER JOIN MaterialeOrdine mo 
                     ON mo.Id = mod.IdOrdine
-                    WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
-                    mo.stato = 2 AND
+                    WHERE m.barcode = @Barcode AND mod.idOrdine = @IdOrdine
+                   AND mo.stato = 2 AND
                     mo.idMandatoSpedizione IS NOT NULL
                     AND m.Giacenza + @QuantityChange >= 0";
 
@@ -83,7 +83,7 @@ namespace Scan_Barcode.Repository.Barcode
         ON mod.idMateriale = m.id
     INNER JOIN MaterialeOrdine mo 
         ON mo.Id = mod.IdOrdine
-    WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine
+    WHERE m.barcode = @Barcode AND mod.idOrdine = @IdOrdine
     AND m.Giacenza + @QuantityChange >= 0 AND
     mo.stato = 3 AND
                     mod.rientrato IS NULL";
@@ -110,7 +110,7 @@ namespace Scan_Barcode.Repository.Barcode
         FROM Materiale m
         INNER JOIN MaterialeOrdineDettaglio mod
             ON mod.idMateriale = m.id
-        WHERE m.Barcode = @Barcode AND mod.idOrdine = @IdOrdine";
+        WHERE m.barcode = @Barcode AND mod.idOrdine = @IdOrdine";
 
             var parameters = new Dictionary<string, object>
             {

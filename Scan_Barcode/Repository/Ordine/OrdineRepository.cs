@@ -33,7 +33,7 @@ namespace Scan_Barcode.Repository
                 CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
                 CAST(mp.colonna AS VARCHAR(2)) + '-' + 
                 CAST(mp.ripiano AS VARCHAR(1)) AS Posizione,
-                m.Barcode AS Barcode
+                m.barcode AS Barcode
 
                 FROM 
                 MaterialeOrdineDettaglio mdo
@@ -43,7 +43,7 @@ namespace Scan_Barcode.Repository
                 Utenti u ON u.IdUtente = mo.idUtente
                 JOIN 
                 Materiale m ON m.id = mdo.idMateriale
-                LEFT JOIN 
+                JOIN 
                 MaterialePosizione mp ON mp.id = mdo.idMaterialePosizione
                 WHERE 
                 m.idMagazzino = @idMagazzino AND
@@ -73,7 +73,7 @@ namespace Scan_Barcode.Repository
                 m.Giacenza as QuantitàTotale,
                 mdo.qtaRichiesta AS Quantita_DiRientro,
                 mo.nOrdine AS Riferimento_Ordine,
-                m.Barcode AS Barcode,
+                m.barcode AS Barcode,
                 CAST(mp.scaffale AS VARCHAR(1)) + '-' + 
                 CAST(mp.colonna AS VARCHAR(2)) + '-' + 
                 CAST(mp.ripiano AS VARCHAR(1)) AS Posizione
@@ -86,7 +86,7 @@ namespace Scan_Barcode.Repository
                 JOIN 
                 Materiale m ON m.id = mdo.idMateriale
                 LEFT JOIN 
-                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizioneRientro
+                MaterialePosizione mp ON mp.id = mdo.idMaterialePosizione
                 WHERE 
                 m.idMagazzino = @idMagazzino AND
                 mo.stato = 3
@@ -110,7 +110,7 @@ namespace Scan_Barcode.Repository
         FROM MaterialeOrdine mo
         JOIN MaterialeOrdineDettaglio mod ON mod.idOrdine = mo.id
         JOIN Materiale m ON m.id = mod.idMateriale
-        WHERE mo.id = @idOrdine AND Barcode = @Barcode";
+        WHERE mo.id = @idOrdine AND barcode = @Barcode";
 
             var parameters = new Dictionary<string, object>
             {

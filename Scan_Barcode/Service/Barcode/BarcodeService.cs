@@ -50,6 +50,32 @@ namespace Scan_Barcode.Service
             }
 
             // Procedi con l'aggiornamento della quantità
+            var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsyncScarico(barcode, quantityChange, idOrdine, username);
+
+            if (!isUpdated)
+            {
+                throw new KeyNotFoundException("Prodotto non trovato per il barcode fornito.");
+            }
+
+            return isUpdated;
+        }
+        public async Task<bool> UpdateProductQuantityAsyncCarico(string barcode, int quantityChange, int idOrdine, string username)
+        {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                throw new ArgumentException("Il barcode non può essere nullo o vuoto.");
+            }
+
+            // Recupera la quantità attuale dal database
+            var currentQuantity = await _barcodeRepository.GetCurrentQuantityByBarcodeAsync(barcode, idOrdine);
+
+            // Verifica se la quantità risultante sarebbe negativa
+            if (currentQuantity + quantityChange < 0)
+            {
+                throw new InvalidOperationException("La quantità non può diventare negativa.");
+            }
+
+            // Procedi con l'aggiornamento della quantità
             var isUpdated = await _barcodeRepository.UpdateQuantityByBarcodeAsyncCarico(barcode, quantityChange, idOrdine, username);
 
             if (!isUpdated)
@@ -59,7 +85,6 @@ namespace Scan_Barcode.Service
 
             return isUpdated;
         }
-
         public async Task<string> GetUsernameByUserIdAsync(int userId)
         {
             string query = @"SELECT UserId 
