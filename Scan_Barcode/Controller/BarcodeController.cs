@@ -60,8 +60,8 @@ namespace Scan_Barcode.Controller
         /*
          * Qua effettuiamo l'update del prodotto preso in esame
          */
-        [HttpPut("{barcode}/{newQuantity}/{IDOrdine}/{UserID}")]
-        public async Task<IActionResult> UpdateProductQuantity(string barcode, int newQuantity, int IDOrdine, int UserID)
+        [HttpPut("Scarico/{barcode}/{newQuantity}/{IDOrdine}/{UserID}")]
+        public async Task<IActionResult> UpdateProductQuantityScarico(string barcode, int newQuantity, int IDOrdine, int UserID)
         {
             try
             {
@@ -102,7 +102,48 @@ namespace Scan_Barcode.Controller
                 return StatusCode(500, new { Message = "Errore interno del server", Details = ex.Message });
             }
         }
+        [HttpPut("Carico/{barcode}/{newQuantity}/{IDOrdine}/{UserID}")]
+        public async Task<IActionResult> UpdateProductQuantityCarico(string barcode, int newQuantity, int IDOrdine, int UserID)
+        {
+            try
+            {
+                var username = await _barcodeService.GetUsernameByUserIdAsync(UserID);
 
+                if (string.IsNullOrEmpty(username))
+                {
+                    return NotFound(new { message = "Errore! L'username associato all'UserID non è stato trovato." });
+                }
+
+                var isUpdated = await _barcodeService.UpdateProductQuantityAsyncCarico(barcode, newQuantity, IDOrdine, username);
+
+                if (isUpdated)
+                {
+                    return Ok(new { Message = "Quantità aggiornata con successo." });
+                }
+
+                return NotFound(new { Message = "Prodotto non trovato." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message }); // Quantità non valida
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (SqlException ex) when (ex.Number == -2) 
+            {
+                return StatusCode(500, new { Message = "Attenzione il network attualmente non è disponiblile. Riprovare!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Errore interno del server", Details = ex.Message });
+            }
+        }
 
     }
 }
