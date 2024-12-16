@@ -103,7 +103,7 @@ namespace Scan_Barcode.Repository
         
         
         
-        public async Task<IEnumerable<MaterialeOrdineDto>> GetMaterialeOrdineAsync(int idOrdine, string barcode)
+       /* public async Task<IEnumerable<MaterialeOrdineDto>> GetMaterialeOrdineAsync(int idOrdine, string barcode)
         {
             var query = @"
         SELECT nOrdine, destinazione, indirizzo, localita, provincia, regione, cap, qta, qtaRichiesta, Barcode
@@ -121,6 +121,7 @@ namespace Scan_Barcode.Repository
             var result = await _databaseService.QueryAsync<MaterialeOrdineDto>(query, parameters);
             return result;
         }
+        */
     }
     
     

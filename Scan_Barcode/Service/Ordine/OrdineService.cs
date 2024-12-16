@@ -12,8 +12,11 @@ public class OrdineService : IOrdineService
         _ordineRepository = ordineRepository;
     }
     
+  /*
     public async Task<IEnumerable<MaterialeOrdineDto>> GetMaterialeOrdineAsync(int idOrdine, string barcode)
     {
         return await _ordineRepository.GetMaterialeOrdineAsync(idOrdine, barcode);
     }
+    
+    */
 }

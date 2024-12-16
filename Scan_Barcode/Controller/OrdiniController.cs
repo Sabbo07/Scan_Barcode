@@ -85,7 +85,7 @@ public class OrdiniController : ControllerBase
             
         }
         // codice per testare il prodotto abbia un ordine
-        [HttpGet("{idOrdine}/{barcode}/SUPERFLUO")]
+       /* [HttpGet("{idOrdine}/{barcode}/SUPERFLUO")]
         public async Task<IActionResult> GetMaterialeOrdine(int idOrdine, string barcode)
         {
             try
@@ -137,6 +137,7 @@ public class OrdiniController : ControllerBase
             }
             
         }
+        */
         
 
 }
